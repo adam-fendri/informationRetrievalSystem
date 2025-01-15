@@ -1,98 +1,33 @@
-# Markdown syntax guide
-
-## Headers
-
-# This is a Heading h1
-## This is a Heading h2
-###### This is a Heading h6
-
-## Emphasis
-
-*This text will be italic*  
-_This will also be italic_
-
-**This text will be bold**  
-__This will also be bold__
-
-_You **can** combine them_
-
-## Lists
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-    * Item 3a
-    * Item 3b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-    1. Item 3a
-    2. Item 3b
-
-## Images
-
-![This is an alt text.](/image/sample.webp "This is a sample image.")
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blockquotes
-
-> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
->
->> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
-
-## Tables
-
-| Left columns  | Right columns |
-| ------------- |:-------------:|
-| left foo      | right foo     |
-| left bar      | right bar     |
-| left baz      | right baz     |
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## Inline code
-
-This web site is using `markedjs/marked`.
-
-
 # Project Title: Information Retrieval System
 
 ## Description
+
 This project implements an Information Retrieval (IR) system using the Vector Space Model with TF-IDF weighting and cosine similarity to retrieve documents. The system processes a collection of documents, applies text preprocessing, constructs an inverted index, builds a TF-IDF matrix, and supports querying to find the most relevant documents.
+
 ## Dataset Overview
+
 **Source:**
 The dataset used in this project is sourced from Kaggle and can be found [here](https://www.kaggle.com/datasets/srisaisuhassanisetty/fake-job-postings). It is a collection of job postings that includes both legitimate and fraudulent postings. This rich dataset provides a diverse range of text data for analysis and testing the information retrieval system.
 
 **Description:**
 The 'Fake Job Postings' dataset contains approximately 18,000 job advertisements with 18 columns of data, including job title, company profile, description, requirements, benefits, and more. Each entry also has a binary label indicating whether the job posting is real or fake. For the purposes of our project, the focus will be primarily on text analysis of the job descriptions, requirements, and titles to retrieve relevant job postings based on user queries.
+
 ## Feautres
-* **Data Loading and Preparation:** Load text data from a CSV file and merge specific fields to create a unified text corpus.
-* **Text Preprocessing:** Normalize text by removing special characters, converting to lowercase, tokenizing, and removing stopwords.
-* **Inverted Index Creation:** Generate an inverted index that maps each unique term to the documents that contain it.
-* **TF-IDF Matrix Construction:** Convert the text data into a vector space model using TF-IDF weighting.
-* **Document Retrieval:** Respond to user queries by calculating the cosine similarity between the query and document vectors, ranking documents by their relevance.
+
+- **Data Loading and Preparation:** Load text data from a CSV file and merge specific fields to create a unified text corpus.
+- **Text Preprocessing:** Normalize text by removing special characters, converting to lowercase, tokenizing, and removing stopwords.
+- **Inverted Index Creation:** Generate an inverted index that maps each unique term to the documents that contain it.
+- **TF-IDF Matrix Construction:** Convert the text data into a vector space model using TF-IDF weighting.
+- **Document Retrieval:** Respond to user queries by calculating the cosine similarity between the query and document vectors, ranking documents by their relevance.
 
 ## Function Descriptions
+
 **1. Load and Prepare Data**\
 **Description:** Loads data from a CSV file and combines text from specific columns ('title', 'description', 'requirements') into a single string per document. This function is essential for preparing the text data for further processing and analysis.\
 **Parameters:**\
 `file_path`: Path to the CSV file.\
 `num_docs`: Number of top documents to process.\
-*Returns:* A list of strings, each containing the combined text of a document.\
+_Returns:_ A list of strings, each containing the combined text of a document.\
 **2. Preprocessing**\
 **Description:** Processes the raw text data by removing special characters, converting text to lowercase, splitting into tokens, and removing stopwords. This normalization standardizes the text and reduces its complexity, enhancing the performance of the retrieval system.\
 **Input:** `text`: The raw text to be processed.\
@@ -115,35 +50,38 @@ TF-IDF weighting helps to distinguish the relative importance of terms in docume
 Function: retrieve_documents
 Description: Uses the TF-IDF matrix and cosine similarity to identify and rank documents based on their relevance to a user's query. This function is central to the system’s ability to deliver the most pertinent documents to the user based on their search.\
 **How It Works:**
-* **Processing Queries:** A query is processed and transformed into a vector using the same TF-IDF model as the documents.\
-* **Calculating Similarity:** The cosine similarity between the query vector and each document vector in the TF-IDF matrix is calculated.
-* **Ranking Documents:** Documents are ranked based on their similarity scores, and the top results are returned\
-**Output:** Indices of the ranked documents along with their similarity scores, providing a quantitative measure of relevance.
+
+- **Processing Queries:** A query is processed and transformed into a vector using the same TF-IDF model as the documents.\
+- **Calculating Similarity:** The cosine similarity between the query vector and each document vector in the TF-IDF matrix is calculated.
+- **Ranking Documents:** Documents are ranked based on their similarity scores, and the top results are returned\
+  **Output:** Indices of the ranked documents along with their similarity scores, providing a quantitative measure of relevance.
 
 ## Installation
+
 ```
 # Clone this repository
 git clone [repository-url]
 # Navigate to the project directory
 cd [local-repository]
 ```
+
 ## Dependencies
-* Python 3.x
-* Pandas
-* NumPy
-* scikit-learn\
-**Install the required Python packages using pip:**
-    ```
-python information_retrieval_system.py
-    ``` 
+
+- Python 3.x
+- Pandas
+- NumPy
+- scikit-learn\
+  **Install the required Python packages using pip:**
+  `python information_retrieval_system.py
+   `
+
 ## Usage
+
 **1. Prepare Your Dataset:** Ensure your dataset is in a CSV format with at least the columns 'title', 'description', and 'requirements'.\
 **2. Configuration:** Modify the file_path in the main() function to point to your CSV dataset.\
 **3. Running the Program:**\
-    ```
-python information_retrieval_system.py
-    ```  \
+ `python information_retrieval_system.py
+   ` \
 **4. Interacting with the System:**\
-    * After executing the script, enter queries at the prompt to retrieve relevant           documents.\
-    * Type `exit` to quit the program.
-    
+ _ After executing the script, enter queries at the prompt to retrieve relevant documents.\
+ _ Type `exit` to quit the program.
