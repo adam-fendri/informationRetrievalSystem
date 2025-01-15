@@ -35,6 +35,7 @@ _Returns:_ A list of strings, each containing the combined text of a document.\
 **3. Create Inverted Index**\
 **Description:** Constructs an inverted index that maps each unique word to a list of documents that contain this word. The inverted index is a critical data structure for quickly accessing document lists based on search terms during query processing.\
 **Input:** `collection`: A list of preprocessed document texts.\
+![Inverted index](inverted_index.png "Inverted index")
 **4. Build TF-IDF Matrix**\
 **Description:** This function transforms the preprocessed text data into a TF-IDF matrix, which is crucial for evaluating the significance of words within each document relative to the entire document corpus. TF-IDF stands for Term Frequency-Inverse Document Frequency, a numerical statistic that increases with the number of times a word appears in a document but is offset by the frequency of the word across all documents.\
 **Input:**
@@ -55,6 +56,7 @@ Description: Uses the TF-IDF matrix and cosine similarity to identify and rank d
 - **Calculating Similarity:** The cosine similarity between the query vector and each document vector in the TF-IDF matrix is calculated.
 - **Ranking Documents:** Documents are ranked based on their similarity scores, and the top results are returned\
   **Output:** Indices of the ranked documents along with their similarity scores, providing a quantitative measure of relevance.
+![Query](query.png "Inverted index")
 
 ## Installation
 
