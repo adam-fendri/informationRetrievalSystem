@@ -15,9 +15,9 @@ def load_and_prepare_data(file_path, num_docs=100):
 # Step 2: Preprocessing
 def preprocess_text(text):
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)  # Remove special characters
-    text = text.lower()  # Convert to lowercase
+    text = text.lower()
     tokens = text.split()  # Tokenize
-    stopwords = set(open("stopwords.txt").read().split())  # Load stopwords from file
+    stopwords = set(open("stopwords.txt").read().split())  
     tokens = [word for word in tokens if word not in stopwords]  # Remove stopwords
     return " ".join(tokens)
 
@@ -57,6 +57,8 @@ def main(file_path):
     print("Creating inverted index...")
     inverted_index = create_inverted_index(preprocessed_collection)
 
+    #print(inverted_index)
+    
     print("Building TF-IDF matrix...")
     vectorizer, tfidf_matrix = build_tfidf_matrix(preprocessed_collection)
 
