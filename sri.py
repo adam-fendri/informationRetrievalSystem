@@ -4,27 +4,34 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+def load_and_prepare_data(true_path, fake_path, num_true=200, num_fake=20):
+    # Load true data
+    df_true = pd.read_csv(true_path)
+    df_true = df_true.head(num_true)
+    df_true['combined_text'] = df_true['title'] + " " + df_true['text']
+    df_true['relevant'] = 1  # Mark as relevant
+    
+    # Load fake data
+    df_fake = pd.read_csv(fake_path)
+    df_fake = df_fake.head(num_fake)
+    df_fake['combined_text'] = df_fake['title'] + " " + df_fake['text']
+    df_fake['relevant'] = 0  # Mark as non-relevant
+    
+    # Combine datasets
+    df_combined = pd.concat([df_true, df_fake], ignore_index=True)
+    return df_combined['combined_text'].tolist(), df_combined['relevant'].tolist()
 
-
-# Step 1: Load and Prepare Data
-def load_and_prepare_data(file_path, num_docs=100):
-    df = pd.read_csv(file_path)
-    df['combined_text'] = df['title'] + " " + df['description'] + " " + df['requirements']
-    return df['combined_text'].head(num_docs).tolist()
-
-# Step 2: Preprocessing
 def preprocess_text(text):
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)  # Remove special characters
     text = text.lower()
     tokens = text.split()  # Tokenize
-    stopwords = set(open("stopwords.txt").read().split())  
+    stopwords = set(open("stopwords.txt").read().split())
     tokens = [word for word in tokens if word not in stopwords]  # Remove stopwords
     return " ".join(tokens)
 
 def preprocess_collection(collection):
     return [preprocess_text(doc) for doc in collection]
 
-# Step 3: Create Inverted Index
 def create_inverted_index(collection):
     inverted_index = {}
     for doc_id, doc in enumerate(collection):
@@ -34,11 +41,22 @@ def create_inverted_index(collection):
             inverted_index[term].append(doc_id)
     return inverted_index
 
-# Step 4: Vector Space Model
-def build_tfidf_matrix(collection):
-    vectorizer = TfidfVectorizer()
+def build_tfidf_matrix(collection, method='ntc'):
+    if method == 'ltc':  # Logarithmic TF, with IDF, Cosine normalization
+        vectorizer = TfidfVectorizer(sublinear_tf=True, use_idf=True)
+    elif method == 'ntc':  # Natural TF, with IDF, Cosine normalization
+        vectorizer = TfidfVectorizer(sublinear_tf=False, use_idf=True)
+    elif method == 'lnc':  # Logarithmic TF, no IDF, Cosine normalization
+        vectorizer = TfidfVectorizer(sublinear_tf=True, use_idf=False)
+    elif method == 'nnc':  # Natural TF, no IDF, Cosine normalization
+        vectorizer = TfidfVectorizer(sublinear_tf=False, use_idf=False)
+    else:
+        raise ValueError("Invalid method specified. Choose from 'ntc', 'ltc', 'nnc', or 'lnc'.")
+    
     tfidf_matrix = vectorizer.fit_transform(collection)
     return vectorizer, tfidf_matrix
+
+
 
 def retrieve_documents(query, vectorizer, tfidf_matrix):
     query_vector = vectorizer.transform([query])
@@ -46,10 +64,9 @@ def retrieve_documents(query, vectorizer, tfidf_matrix):
     ranked_indices = np.argsort(similarities)[::-1]
     return ranked_indices, similarities
 
-# Step 5: Main Function
-def main(file_path):
+def main(true_path, fake_path):
     print("Loading and preparing data...")
-    collection = load_and_prepare_data(file_path)
+    collection, labels = load_and_prepare_data(true_path, fake_path)
 
     print("Preprocessing collection...")
     preprocessed_collection = preprocess_collection(collection)
@@ -57,10 +74,15 @@ def main(file_path):
     print("Creating inverted index...")
     inverted_index = create_inverted_index(preprocessed_collection)
 
-    #print(inverted_index)
-    
+    # Let user choose the retrieval method
+    print("Choose the retrieval method: 'ntc', 'ltc', 'nnc', or 'lnc'")
+    method = input("Method: ").strip().lower()
+    while method not in ['ntc', 'ltc', 'nnc', 'lnc']:
+        print("Invalid input. Please choose 'ntc', 'ltc', 'nnc', or 'lnc'.")
+        method = input("Method: ").strip().lower()
+
     print("Building TF-IDF matrix...")
-    vectorizer, tfidf_matrix = build_tfidf_matrix(preprocessed_collection)
+    vectorizer, tfidf_matrix = build_tfidf_matrix(preprocessed_collection, method=method)
 
     print("System is ready! Enter your queries.")
     while True:
@@ -69,11 +91,22 @@ def main(file_path):
             break
         preprocessed_query = preprocess_text(query)
         ranked_indices, similarities = retrieve_documents(preprocessed_query, vectorizer, tfidf_matrix)
-        print("\nTop results:")
-        for idx in ranked_indices[:5]:
-            print(f"Doc {idx}: {collection[idx]} (Score: {similarities[idx]:.4f})\n")
 
-# Execute the program
+        top_indices = ranked_indices[:10]
+        retrieved_labels = [labels[idx] for idx in top_indices]
+        true_relevants = sum(retrieved_labels)
+
+        precision = true_relevants / 10
+        recall = true_relevants / sum([1 for label in retrieved_labels if label == 1]) if true_relevants > 0 else 0
+        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) else 0
+
+        print("\nTop results:")
+        for idx in top_indices:
+            relevance = 'Relevant' if labels[idx] else 'Non-relevant'
+            print(f"Doc {idx}: {collection[idx]} (Score: {similarities[idx]:.4f}, {relevance})")
+        print(f"\nPrecision: {precision:.4f}, Recall: {recall:.4f}, F1 Score: {f1_score:.4f}\n")
+
 if __name__ == "__main__":
-    file_path = "C://Adam//studies//Gl5//sem1//SRI//projet//FakePostings.csv"
-    main(file_path)
+    true_path = "C://Adam//studies//Gl5//sem1//SRI//projet//True.csv"
+    fake_path = "C://Adam//studies//Gl5//sem1//SRI//projet//Fake.csv"
+    main(true_path, fake_path)
